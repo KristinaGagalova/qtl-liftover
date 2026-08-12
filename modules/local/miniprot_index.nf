@@ -1,6 +1,6 @@
 process MINIPROT_INDEX {
     tag "$meta.id"
-    label 'process_high'
+    label 'process_extra_high'
 
     conda "bioconda::miniprot=0.13"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
