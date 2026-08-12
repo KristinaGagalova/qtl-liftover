@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+"""Shim standing in for minimap2 in the integration test: emits the PAF that a
+real aligner would produce for the synthetic 1 kb-insertion dataset."""
+import sys, random, re
+random.seed(3)
+args = sys.argv[1:]
+preset = args[args.index("-x") + 1] if "-x" in args else "asm10"
+pos_args = [a for i, a in enumerate(args)
+            if not a.startswith("-") and not (i and args[i-1] in
+               ("-x","-t","-I","-K","-N","-p","-o"))]
+target, query = pos_args[-2], pos_args[-1]
+INS_AT, INS_LEN, QLEN = 20000, 1000, 49000
+tt = lambda p: p if p < INS_AT else p + INS_LEN
+
+if preset.startswith("asm"):   # whole-genome alignment, source(query) -> target
+    print("\t".join(["chrA1", str(QLEN), "0", str(QLEN), "+", "chrB1",
+                     str(QLEN + INS_LEN), "0", str(QLEN + INS_LEN),
+                     str(QLEN - 300), str(QLEN + INS_LEN), "60",
+                     "tp:A:P", f"cg:Z:{INS_AT}M{INS_LEN}D{QLEN-INS_AT}M"]))
+else:                          # short probes vs one genome
+    is_target = "varietyB" in target
+    chrom = "chrB1" if is_target else "chrA1"
+    clen = QLEN + INS_LEN if is_target else QLEN
+    for i, s in enumerate(range(500, QLEN - 500, 100)):
+        ts = tt(s) + random.randint(-2, 2) if is_target else s
+        print("\t".join([f"P{i}", "100", "0", "100", "+", chrom, str(clen),
+                         str(ts), str(ts + 100), "99", "100", "60", "tp:A:P"]))

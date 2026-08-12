@@ -1,0 +1,16 @@
+# Nextflow working files
+work/
+.nextflow/
+.nextflow.log*
+results/
+
+# Temporary and scheduler files
+tmp/
+*.tmp
+*.log
+slurm-*.out
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store

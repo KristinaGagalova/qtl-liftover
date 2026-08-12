@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""Shim standing in for miniprot in the integration test."""
+import sys
+args = sys.argv[1:]
+INS_AT, INS_LEN, QLEN = 20000, 1000, 49000
+tt = lambda p: p if p < INS_AT else p + INS_LEN
+if "-d" in args:
+    open(args[args.index("-d") + 1], "w").write("stub index\n")
+    sys.exit(0)
+print("##gff-version 3")
+for i, s in enumerate(range(1000, QLEN - 1000, 500)):
+    ts, te = tt(s) + 1, tt(s + 300)
+    print(f"chrB1\tminiprot\tmRNA\t{ts}\t{te}\t500\t+\t.\t"
+          f"ID=MP{i};Rank=1;Identity=0.97;Positive=0.98;Frameshift=0;"
+          f"StopCodon=0;Target=g{i}.t1 1 100")
